@@ -34,15 +34,14 @@ double Summ(double x) {
     return result;
 }
 
-// Вычисление коэффициентов разделенных разностей Ньютона
-double f(double x, int n, double xi[]) {
-    if (n == 0) return Si(xi[0]);
+// Функция для вычисления полинома Лагранжа
+double LagrangeInterpolation(double x, int n, double xi[]) {
     double result = 0;
     for (int i = 0; i <= n; i++) {
         double term = Si(xi[i]);
         for (int j = 0; j <= n; j++) {
             if (j != i) {
-                term /= (xi[i] - xi[j]);
+                term *= (x - xi[j]) / (xi[i] - xi[j]);
             }
         }
         result += term;
@@ -50,17 +49,36 @@ double f(double x, int n, double xi[]) {
     return result;
 }
 
-// Построение интерполяционного полинома Ньютона
-double NewtonInterpolation(double x, int n, double xi[]) {
-    double result = f(xi[0], 0, xi);
-    double product = 1;
-    for (int i = 1; i <= n; i++) {
-        product *= (x - xi[i - 1]);
-        result += product * f(xi[i], i, xi);
-    }
-    return result;
-}
+void LagrangePolynomial() {
+    /*
+    Задание 2
+    По полученной таблице значений построить интерполяционный полином Лагранжа, приближающий Si(x):  
+    L_n = (сумма S(x_i) от i=0 до n)(произведение ((x-x_j)/(x_i - x_j) от j=0, j!=i до n))
+    Затем вычислить погрешность интерполирования
+    
+    */
+    double a = 0;
+    double b = 4;
+    double h = 0.3;
+    int n = static_cast<int>((b - a) / h);
 
+    double xi[100];
+    for (int i = 0; i <= n; i++) {
+        xi[i] = a + i * h;
+    }
+
+    std::cout << "x_i\t\tSi(x)\t\tL_n(x)\t\t e(x)\n";
+
+    for (int i = 0; i <= n; i++) {
+        double x = xi[i];
+        double Si_x = Si(x);
+        double L_n_x = LagrangeInterpolation(x, i, xi);
+        double error = std::abs(Si_x - L_n_x);
+
+        std::cout << std::fixed << std::setprecision(6)
+                  << x << "\t\t" << Si_x << "\t\t" << L_n_x << "\t\t" << error << "\n";
+    }
+}
 
 void Tabulation() {
 /*  
@@ -92,45 +110,9 @@ void Tabulation() {
     std::cout << std::endl;
 }
 
-void NewtonPolynomial(){
-/*
-    Задание 2
-    По полученной таблице значений посторить интерполяционный полином
-    Ньютона, приближающий Si(x)
-    L_n(x) = f(x_0)+(x-x_o)f(x_0,x_1)+(x-x_0)(x-x_1)f(x_0,x_1,x_2)+...
-    +(x-x_0)(x-x_1)...(x-x_n)f(x_0,x_1,...,x_n)
-    и вычислить погрешность интерполирования
-    e_n = max(e(x)) (x∈(a,b)), e(x) = |Si(x)-L_n(x)|
-
-*/
-    double a = 0;
-    double b = 4;
-    double h = 0.3;
-    int n = static_cast<int>((b - a) / h);
-    double eps = 1e-6;
-
-    double xi[100]; 
-    for (int i = 0; i <= n; i++) {
-        xi[i] = a + i * h;
-    }
-
-    std::cout << "x_i\t\tSi(x)\t\tL_n(x)\t\t e(x)\n";
-
-    for (int i = 0; i <= n; i++) {
-        double x = xi[i];
-        double Si_x = Si(x);
-        double L_n_x = NewtonInterpolation(x, i, xi);
-        double error = std::abs(Si_x - L_n_x);
-
-        std::cout << std::fixed << std::setprecision(6)
-                  << x << "\t\t" << Si_x << "\t\t" << L_n_x << "\t\t" << error << "\n";
-    }
-
-
-}
-
 int main() {
     Tabulation();
-    NewtonPolynomial();
+    LagrangePolynomial(); 
     return 0;
 }
+
