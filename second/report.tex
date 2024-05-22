@@ -14,7 +14,7 @@
 \usepackage[left=3cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
 \renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}
 \lstset{
-    language=C++,
+    language=Python,
     basicstyle=\small\ttfamily,
     keywordstyle=\color{blue},
     commentstyle=\color{green!40!black},
@@ -88,15 +88,13 @@
 \section{Постановка задачи}
 \hspace{1.25cm}Необходимо изучить и сравнить различные способы приближённого вычисления функции
 \begin{equation}
-    Si(x) = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n+1)(2n+1)!}
+    %Si(x) = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n+1)(2n+1)!}
+    Si(x) = \int_{0}^{x} \frac{\sin(t)}{t} \, dt
 \end{equation}
 \begin{enumerate}
     \item Протабулировать Si(x) на отрезке [a,b] с шагом h и точностью $ \varepsilon$, основываясь на ряде Тейллора,
      предварительно вычислив его. Получив таким образом таблицу из 11 точек вида:
-    %  \begin{equation}
-    %     \text{erf}(x) =\displaystyle\frac{2}{\sqrt{\pi}} \displaystyle\sum\limits_{n=1}^{\infty}(-1)^n\displaystyle\frac{x^{2n+1}}{n!(2n+1)}
-    %  \end{equation} Получив таким образом таблицу из 11 точек
-    \begin{tabbing}
+       \begin{tabbing}
         $x_0$ \= $x_1$ \= $x_2$ \= \dots\\
         $f_0$ \> $f_1$ \> $f_2$ \> \dots\\
     \end{tabbing}
@@ -153,7 +151,24 @@
 \section{Ход работы}
 \hspace*{1.25cm}Для того чтобы найти значение функции в точке, необходимо протабулировать искомый интеграл на отрезке [a, b] с шагом $h = 0.4$ и точностью $\varepsilon$. 
 
-Для этого выделим два общих члена $a_n, \; a_{n + 1}$ из $Si(x)$ и найдём\\ $q_n = \dfrac{a_{n+1}}{a_n}$:
+Для этого найдём разбиение Si(x) в ряд Тейлора: 
+
+1) Воспользуемся стандартным разбиением функции $sin(x) = t - \frac{t^3}{3!} + \frac{t^5}{5!} - \frac{t^7}{7!} + \ldots$ в ряд Тейлора, сделав в нем замену $x = t$ и разделив на $t$:
+
+\begin{equation}
+    \frac{sin(t)}{t} = 1 - \frac{t^2}{3!} + \frac{t^4}{5!} - \frac{t^6}{7!} + \ldots
+\end{equation}
+
+2) Проинтегрируем полученное выражение на интеграле [0, x]:
+\begin{equation}
+    \begin{split}
+        \int_{0}^{x} \frac{\sin(t)}{t} \, dt &= \int_{0}^{x} \left(1 - \frac{t^2}{3!} + \frac{t^4}{5!} - \frac{t^6}{7!} + \ldots\right) dt = \\
+        &= x - \frac{x^3}{3 \cdot 3!} + \frac{x^5}{5 \cdot 5!} - \frac{x^7}{7 \cdot 7!} + \ldots = \sum_{n=0}^{\infty} (-1)^n \frac{x^{2n+1}}{(2n+1) (2n+1)!}
+    \end{split}
+    \end{equation}
+    
+
+Выделим два общих члена $a_n, \; a_{n + 1}$ из $Si(x)$ и найдём $q_n = \dfrac{a_{n+1}}{a_n}$:
     \begin{equation}
         a_{n}=\frac{(-1)^{n}x^{2n+1}}{(2n+1)(2n+1)!}, \quad a_{n+1}=\frac{(-1)^{n+1}x^{2n+3}}{(2n+3)(2n+3)!}.
     \end{equation}
@@ -394,5 +409,5 @@
 \hspace{1.25cm}В ходе работы были изучены численные методы вычисления интегралов с приме\-нением пяти различных квадратурных формул. Анализ результатов показал, что методы Гаусса и Симпсона являются наиболее эффективными. Они обеспечивает высокую точность при минимальном числе разбиений благодаря специально подобранным узлам для приближенного вычисления интеграла.
 \clearpage
 \section{Листинг программы}
-\lstinputlisting[language=C++]{./main.cpp}
+\lstinputlisting[language=Python]{./main.py}
 \end{document}
